@@ -1,9 +1,8 @@
 {
   "name": "@cch137/emitter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "type": "module",
-  "main": "./dist/index.js",
   "scripts": {
     "devbuild": "tsc -w",
     "devstart": "nodemon ./dist/index.test.js",

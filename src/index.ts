@@ -1,6 +1,6 @@
 import { Collection, WeakCollection, type Group } from "@cch137/group";
 
-type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap;
+export type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap;
 type DefaultEventMap = [never];
 type Args<K, T> = T extends DefaultEventMap
   ? [...args: any[]]

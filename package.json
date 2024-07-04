@@ -1,8 +1,10 @@
 {
   "name": "@cch137/emitter",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "",
   "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "devbuild": "tsc -w",
     "devstart": "nodemon ./dist/index.test.js",
@@ -29,6 +31,6 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@cch137/group": "^0.1.1"
+    "@cch137/group": "^0.1.3"
   }
 }

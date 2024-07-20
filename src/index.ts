@@ -1,46 +1,51 @@
 import { Collection, WeakCollection, type Group } from "@cch137/group";
 
 export type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap;
+
 type DefaultEventMap = [never];
+
 type Args<K, T> = T extends DefaultEventMap
   ? [...args: any[]]
   : K extends keyof T
   ? T[K]
   : never;
-type _Key<K, T> = T extends DefaultEventMap
+
+type EventName<K, T> = T extends DefaultEventMap
   ? string | symbol | number
   : K | keyof T;
-type TListener<K, T, F> = T extends DefaultEventMap
-  ? F
+
+type Listener<K, T> = T extends DefaultEventMap
+  ? (...args: any[]) => void
   : K extends keyof T
   ? T[K] extends unknown[]
     ? (...args: T[K]) => void
     : never
   : never;
-type Listener1<K, T> = TListener<K, T, (...args: any[]) => void>;
+
+export type ExtractEventMap<T> = T extends Emitter<infer U> ? U : never;
 
 export default class Emitter<T extends EventMap<T>> {
-  private listeners = new Collection<_Key<any, T>, Function>();
+  private listeners = new Collection<EventName<any, T>, Function>();
   private onces = new WeakCollection<Group<Function>, Function>();
 
-  on<K>(eventName: _Key<K, T>, listener: Listener1<K, T>): this {
+  on<K>(eventName: EventName<K, T>, listener: Listener<K, T>): this {
     this.listeners.group(eventName).push(listener);
     return this;
   }
 
-  once<K>(eventName: _Key<K, T>, listener: Listener1<K, T>): this {
+  once<K>(eventName: EventName<K, T>, listener: Listener<K, T>): this {
     const l = this.listeners.group(eventName);
     this.onces.group((l.push(listener), l)).push(listener);
     return this;
   }
 
-  off<K>(eventName: _Key<K, T>, listener: Listener1<K, T>): this {
+  off<K>(eventName: EventName<K, T>, listener: Listener<K, T>): this {
     this.listeners.get(eventName)?.deleteOne(listener);
     this.listeners.trim();
     return this;
   }
 
-  emit<K>(eventName: _Key<K, T>, ...args: Args<K, T>): boolean {
+  emit<K>(eventName: EventName<K, T>, ...args: Args<K, T>): boolean {
     const l = this.listeners.get(eventName);
     l?.forEach(async (i) => i(...args));
     if (l) this.onces.once(l)?.forEach((i) => l.deleteOne(i));
@@ -48,7 +53,7 @@ export default class Emitter<T extends EventMap<T>> {
     return true;
   }
 
-  clear<K>(eventName: _Key<K, T>, ...args: Args<K, T>): this {
+  clear<K>(eventName: EventName<K, T>, ...args: Args<K, T>): this {
     this.listeners.delete(eventName);
     return this;
   }

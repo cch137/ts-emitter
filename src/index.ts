@@ -1,4 +1,4 @@
-import { Collection, WeakCollection, type Group } from "@cch137/group";
+import { Collection, WeakCollection, type Group } from "./group.js";
 
 export type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap;
 
